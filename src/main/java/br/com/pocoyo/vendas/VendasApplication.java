@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 import java.io.IOException;
 import java.io.Writer;
 import org.springframework.boot.SpringApplication;
@@ -29,142 +28,48 @@ public class VendasApplication {
 
 		ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(VendasApplication.class, args);
 	    ProdutoService produtoService =	configurableApplicationContext.getBean(ProdutoService.class);
-	    VendasService vendasService = new VendasService();
+	    VendasService vendasService =	configurableApplicationContext.getBean(VendasService.class);
 	    
-
-	    Menu();
-
+	    
+//	    // Cria um produto vazio
+//	    Produto produtoTeste = new Produto();
+//	    //Coloca no produto vazio o código de barras (Sim o L no final do numero é importante)
+//	    produtoTeste.setCd_barras(1L);
+//	    //coloca a descrição do produto
+//	    produtoTeste.setDesc_produto("teste");
+//	    // coloca valor de compra
+//	    produtoTeste.setVa_compra(1);
+//	    //coloca valor de lucro
+//	    produtoTeste.setVa_lucro(0);
+//	    //coloca valor de venda
+//	    produtoTeste.setVa_venda(1);
+//	    
+//	    //Registra o Produto, No primeiro parametro sempre coloque produtoService, e no segundo coloque o produto criado, neste caso produtoTeste
+//	    RegistrarProduto(produtoService, produtoTeste);
+//
+//	    //Le todos os produtos registrados
+//	    LerProdutos(produtoService);
+//	    
+//	    //Le um produto com base em seu código(ID)
+//	    LerProdutoPorCodigo(produtoService, 1L);
+	    
+	    //Converte tudo para CSV
+	    try {
+			CsvConverter(produtoService, vendasService);
+		} catch (CsvDataTypeMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CsvRequiredFieldEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    
 	}
 
-	public static void Menu() {
-		
-		ProdutoService produtoService = new ProdutoService();
-		VendasService vendasService = new VendasService();
-		
-	    Scanner sc = new Scanner(System.in);
-	    
-	    System.out.println("");
-	    System.out.println("");
-	    System.out.println("");
-	    System.out.println("");
-	    System.out.println("Escolha o tipo de operação que dejesa efetuar:");
-	    System.out.println("Digite 1 para funções relacionadas a Produtos");
-	    System.out.println("Digite 2 para funções relacionadas a Vendas");
-	    System.out.println("Digite 3 para salvar todos os dados em CSV");
-	    int res = sc.nextInt();
-	    if( res == 1) {
-	    	
-	    	funcProduto(produtoService);
-	    	
-	    } if (res == 2) {
-	    	
-	    	funcVendas(vendasService, produtoService);
-	    	
-	    } if (res == 3){
-	    	
-	    	try {
-				CsvConverter(produtoService, vendasService);
-			} catch (CsvDataTypeMismatchException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CsvRequiredFieldEmptyException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	
-	    } else {
-	    	System.out.println("Opção invalida");
-	    	Menu();
-	    }
-	    sc.close();
-	}
+
+
 	
-	public static void funcProduto(ProdutoService produtoService) {
-	    Scanner sc = new Scanner(System.in);
-	    
-    	System.out.println("");
-    	System.out.println("");
-    	System.out.println("");
-    	System.out.println("");
-    	System.out.println("Aperte o NUMERO que representa a função desejada");
-    	System.out.println("1: Criar um produto novo");
-    	System.out.println("2: Ler todos os produtos registrados");
-    	System.out.println("3: Ler um produto");
-    	System.out.println("4: Deletar um produto");
-    	
-    	int res = sc.nextInt();
-    	
-    	if (res == 1) {
-    		RegistrarProduto(produtoService);
-    	}
-    	if (res == 2) {
-    		LerProdutos(produtoService);
-    	}
-    	if (res == 3) {
-    		LerProdutoPorCodigo(produtoService);
-    	}
-    	if (res == 4) {
-    		DeletarProduto(produtoService);
-    	} else {
-    		System.out.println("Opção Invalida");
-    		Menu();
-    	}
-    	sc.close();
-	}
-	
-	public static  void funcVendas(VendasService vendasService, ProdutoService produtoService) {
-	    Scanner sc = new Scanner(System.in);
-	    
-    	System.out.println("");
-    	System.out.println("");
-    	System.out.println("");
-    	System.out.println("");
-    	System.out.println("Aperte o NUMERO que representa a função desejada");
-    	System.out.println("1: Criar uma venda nova");
-    	System.out.println("2: Ler todas as vendas registradas");
-    	System.out.println("3: Ler uma venda");
-    	System.out.println("4: Deletar uma venda");
-    	
-    	int res = sc.nextInt();
-    	
-    	if (res == 1) {
-    		RegistrarVendas(vendasService, produtoService);
-    	}
-    	if (res == 2) {
-    		LerVendas(vendasService);
-    	}
-    	if (res == 3) {
-    		LerVendasPorCodigo(vendasService);
-    	}
-    	if (res == 4) {
-    		DeletarVendas(vendasService);
-    	} else {
-    		System.out.println("Opção Invalida");
-    		Menu();
-    	}
-    	sc.close();
-	}
-	
-	public static Produto RegistrarProduto(ProdutoService produtoService){
-	    Scanner sc = new Scanner(System.in);
-	    System.out.println("Digite o código de barras do produto abaixo:");
-	    Long cd_barras = sc.nextLong();
-	    
-	    System.out.println("Digite a descrição do produto abaixo:");
-	    String desc_produto = sc.next();
-	    
-	    System.out.println("Digite o valor de compra do produto abaixo:");
-	    float va_compra = sc.nextFloat();
-	    
-	    System.out.println("Digite o valor de venda do produto abaixo:");
-	    float va_venda = sc.nextFloat();
-	    
-	    System.out.println("Digite o valor de lucro do produto abaixo:");
-	    float va_lucro = sc.nextFloat();
-	    sc.close();
-	    Produto produto = new Produto(cd_barras, desc_produto, va_compra,va_venda,va_lucro);
-	    
+	public static Produto RegistrarProduto(ProdutoService produtoService, Produto produto){	    
 	    return produtoService.save(produto);
 	}
 	
@@ -176,61 +81,50 @@ public class VendasApplication {
 	    }
 	}
 
-	public static void LerProdutoPorCodigo(ProdutoService produtoService) {
-		Scanner sc = new Scanner(System.in);
+	public static void LerProdutoPorCodigo(ProdutoService produtoService, Long cd_produto) {
+
 		
-		System.out.println("Digite o Código do produto:");
-		Long cd_produto = sc.nextLong();
+
 		
 		Optional<Produto> produto = produtoService.findById(cd_produto);
 		
 		if (produto.isPresent()) {
-			System.out.println(produto.toString());
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println(produto.get().toString());
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
 		} else {
 			System.out.println("Produto não encontrado");
 		}
 		
-		sc.close();
 	}
 
-	public static void DeletarProduto(ProdutoService produtoService) {
-		Scanner sc = new Scanner(System.in);
+	public static void DeletarProduto(ProdutoService produtoService, Long cd_produto) {
 		
 		System.out.println("Digite o Código do produto:");
-		Long cd_produto = sc.nextLong();
-		sc.close();
 		produtoService.deleteById(cd_produto);
 		
 	}
 
-	public static Vendas RegistrarVendas(VendasService vendasService, ProdutoService produtoService){
-
-		boolean i = false;
-		
-		Scanner sc = new Scanner(System.in);
-		
+	public static Vendas RegistrarVendas(VendasService vendasService, ProdutoService produtoService, List<Long> cd_produto){		
+	
 		Vendas vendas = new Vendas();
-		
-		
-		while(i) {
-			
-		System.out.println("Digite o código do produto à inserir");	
-	    Long cd_produto = sc.nextLong();
-	    Optional<Produto> ProdutoLista = produtoService.findById(cd_produto);
-	   
-	    vendas.addProduto(ProdutoLista.get());
-	    
-	    System.out.println("Quer inserir outro produto na venda? S/N");
-	    String aux = sc.next();
-	    
-	    if(aux == "S") {
-	    	i = true;
-	    }
-	    
+		for(Long p : cd_produto) {
+			Optional<Produto> produtoLista = produtoService.findById(p);
+			vendas.addProduto(produtoLista.get());
 		}
-		sc.close();
 	    vendas.setVa_total(vendas.ValorTotal());
 	    return vendasService.save(vendas);
+	    
 	}
 	
 	public static void LerVendas(VendasService vendasService) {
@@ -241,14 +135,9 @@ public class VendasApplication {
 	    }
 	}
 
-	public static void LerVendasPorCodigo(VendasService vendasService) {
-		Scanner sc = new Scanner(System.in);
-		
-		System.out.println("Digite o Código da venda:");
-		Long cd_vendas = sc.nextLong();
+	public static void LerVendasPorCodigo(VendasService vendasService, Long cd_vendas) {
 		
 		Optional<Vendas> vendas = vendasService.findById(cd_vendas);
-		sc.close();
 		if (vendas.isPresent()) {
 			System.out.println(vendas.toString());
 		} else {
@@ -257,12 +146,8 @@ public class VendasApplication {
 		
 	}
 
-	public static void DeletarVendas(VendasService vendasService) {
-	Scanner sc = new Scanner(System.in);
-	
-	System.out.println("Digite o código da venda:");
-	Long cd_venda = sc.nextLong();
-	sc.close();
+	public static void DeletarVendas(VendasService vendasService, Long cd_venda) {
+
 	vendasService.deleteById(cd_venda);
  }
 
@@ -298,7 +183,7 @@ public class VendasApplication {
 			
 			ColumnPositionMappingStrategy mappingStrategy2 = new ColumnPositionMappingStrategy();
 			
-			mappingStrategy2.setType(Vendas.class);
+			mappingStrategy2.setType(Produto.class);
 			
 			String[] columns2 = new String[] { "cd_produto", "cd_barras", "desc_produto", "va_compra", "va_venda", "va_lucro" };
 			mappingStrategy2.setColumnMapping(columns2);
