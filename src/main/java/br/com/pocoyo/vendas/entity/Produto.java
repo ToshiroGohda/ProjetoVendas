@@ -1,5 +1,6 @@
 package br.com.pocoyo.vendas.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -13,7 +14,8 @@ public class Produto {
 	
 	private Long cd_barras;
 	
-	private String desc_produto;
+	@Column(name = "desc_produto")
+	private String descProduto;
 	
 	private float va_compra;
 	
@@ -29,7 +31,7 @@ public class Produto {
 			float va_lucro) {
 		super();
 		this.cd_barras = cd_barras;
-		this.desc_produto = desc_produto;
+		this.descProduto = desc_produto;
 		this.va_compra = va_compra;
 		this.va_venda = va_venda;
 		this.va_lucro = va_lucro;
@@ -52,11 +54,11 @@ public class Produto {
 	}
 
 	public String getDesc_produto() {
-		return desc_produto;
+		return descProduto;
 	}
 
 	public void setDesc_produto(String desc_produto) {
-		this.desc_produto = desc_produto;
+		this.descProduto = desc_produto;
 	}
 
 	public float getVa_compra() {
@@ -85,8 +87,8 @@ public class Produto {
 
 	@Override
 	public String toString() {
-		return "Produto [cd_produto=" + cd_produto + ", cd_barras=" + cd_barras + ", desc_produto=" + desc_produto
-				+ ", va_compra=" + va_compra + ", va_venda=" + va_venda + ", va_lucro=" + va_lucro + "]";
+		return "Produto [Código=" + cd_produto + ", Código de barras=" + cd_barras + ", Descrição=" + descProduto
+				+ ", Valor Compra=" + va_compra + ", Valor Venda=" + va_venda + ", Valor Lucro=" + va_lucro + "]";
 	}
 	
 	
